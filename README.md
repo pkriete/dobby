@@ -42,7 +42,7 @@ Create this file and as a test add the following configuration:
       c.file = "~/.gitconfig"
     end
 
-This makes Dobby aware of our git config file. In your terminal you should now
+This makes Dobby aware of your git config file. In your terminal you should now
 be able to open your `~/.gitconfig` file with:
 
     dobby edit git
@@ -55,8 +55,8 @@ Let's also add a server. In this case, we will try Jekyll:
       s.process = 'jekyll'
     end
 
-Giving our configuration a start command and a process name (or stop command)
-tells Dobby how  it can start and stop this service. Let's try that. Jekyll
+Giving you configuration a start command and a process name (or stop command)
+tells Dobby how it can start and stop this service. Let's try that. Jekyll
 does not start as a daemon, so we will need two terminal windows:
 
     dobby start jekyll
@@ -94,3 +94,9 @@ For now, here's a full apache example. I will leave you to figure it out:
 
 Ideally, in the future dependencies (as seen here as :php => :apache) will force
 the parent process to restart when a dependent child is edited.
+
+## License
+
+Dobby is released under the MIT license:
+
+* http://www.opensource.org/licenses/MIT

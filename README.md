@@ -21,9 +21,9 @@ only the bare essentials. Starting, stopping, restarting, and configuring.
 
 ## Getting Started
 
-Clone the dobby repo to the location of your choice, then alias dobby.rb as dobby:
+Clone the Dobby repo to the location of your choice, then alias dobby.rb as dobby:
 
-    alias=`ruby /path/to/dobby/dobby.rb`
+    alias dobby=`ruby /path/to/dobby/dobby.rb`
 
 Alternatively you can simply source the Dobby autocomplete script. This will set
 you up with the alias and some basic autocompletion (bash only):

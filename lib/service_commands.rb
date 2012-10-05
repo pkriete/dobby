@@ -48,6 +48,10 @@ module ServiceCommands
   end
 
 
+  # Force a restart
+  #
+  # This method will try various restarting options
+  #
   def do_restart
     restart_cmd = get_value 'restart'
 

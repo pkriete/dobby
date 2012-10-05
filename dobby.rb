@@ -47,7 +47,7 @@ end
 # Will need to move when we do custom tasks.
 if cmd == 'list-commands'
   puts ['info', 'start', 'stop', 'restart', 'status', 'edit'] #.sort
-  exit
+  exit 0
 end
 
 

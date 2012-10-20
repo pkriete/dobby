@@ -5,7 +5,7 @@ module ServiceCommands
   # Check if process is running, and if so restart
   def do_edit
     puts "edit ..."
-    system "#{ENV['EDITOR']} #{get_value 'file'}"
+    system("#{ENV['EDITOR']} #{get_value 'file'}")
     puts "Error Editing" if $?.exitstatus != 0
 
     # TODO if there is a parent dependency and this is not our own
@@ -13,10 +13,10 @@ module ServiceCommands
     restart if running?
   end
 
-  def do_start args = []
+  def do_start(args = [])
     # check for flags
-    command = get_value 'start'
-    if command.respond_to? "call"
+    command = get_value('start')
+    if command.respond_to?('call')
       command = command.call args
     end
     
@@ -28,22 +28,20 @@ module ServiceCommands
     # However, for now I'm using system so that I can catch SIGUSR1 as a restart
     # signal and do a self-referential exec to restart.
     #
-    # TODO does any of this apply to process with stop or restart commands?
-
     # TODO There might be a way to start it, grab the pid, and then sleep.
     # That way the PID could be stored by dobby and the sigusr command could
     # kill that particular process.
 
-    Dobby.execute command, @needs_root
+    Dobby.execute(command, @needs_root)
   end
 
 
   def do_stop
-    command = get_value 'stop'
+    command = get_value('stop')
     if command
-      Dobby.execute command, @needs_root
+      Dobby.execute(command, @needs_root)
     else
-      send_stern_message 'TERM' # 'KILL'
+      send_stern_message('TERM') # 'KILL'
     end
   end
 
@@ -53,19 +51,19 @@ module ServiceCommands
   # This method will try various restarting options
   #
   def do_restart
-    restart_cmd = get_value 'restart'
+    restart_cmd = get_value('restart')
 
     if restart_cmd
       Dobby.execute restart_cmd, @needs_root
       return
     end
 
-    start_cmd = get_value 'start'
+    start_cmd = get_value('start')
 
     # if we have start and stop we can fake it given that there were
     # no parameters used to start it.
     if can_stop?
-      unless start_cmd.respond_to? 'call' # potentially has parameters
+      unless start_cmd.respond_to?('call') # potentially has parameters
         do_stop
         do_start
         return
@@ -76,7 +74,7 @@ module ServiceCommands
     # those that we started. Doing anything more requires figuring out how the
     # user started the process. That's as fun as it sounds.
 
-    send_stern_message 'USR1'
+    send_stern_message('USR1')
   end
 
   # Convenience Methods
@@ -103,19 +101,19 @@ module ServiceCommands
 
   private
 
-    def get_value attrib
-      if self.respond_to? attrib
-        value = self.send attrib.to_sym
+    def get_value(attrib)
+      if self.respond_to?(attrib)
+        value = self.send(attrib.to_sym)
       end
 
       if value == nil && @parent.respond_to?(attrib)
-        value = @parent.send :get_value, attrib
+        value = @parent.send(:get_value, attrib)
       end
 
       value
     end
 
-    def send_stern_message message
+    def send_stern_message(message)
       proc = @process || @id
       nogreppid = "grep -v grep | tr -s ' ' | cut -d' ' -f2"
 

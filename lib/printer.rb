@@ -24,7 +24,7 @@ class Printer
     # Takes a 2d array [[key, value], [ke, va]] and prints
     # it as two columns. TODO more than two columns?
     #
-    def columns data
+    def columns(data)
       longest = data.map { |item| item[0].length}.sort.last
 
       data.each do |item|
@@ -34,7 +34,7 @@ class Printer
 
     # Show an error message
     #
-    def error msg
+    def error(msg)
       puts "#{self.red 'Error:'}\033[0m #{msg}"
       exit 1
     end

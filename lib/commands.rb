@@ -1,4 +1,4 @@
-require "lib/service_commands"
+require 'lib/service_commands'
 
 # Knows about all the service config and contains the
 # cli logic to start/stop/etc the right service. This is what
@@ -6,7 +6,7 @@ require "lib/service_commands"
 #
 class Commands
 
-  def initialize dsl
+  def initialize(dsl)
     @services = Hash.new
     dsl.services.each do |k, v|
       @services[k] = v.extend ServiceCommands
@@ -16,31 +16,31 @@ class Commands
 
   # Public Commands
 
-  def info args
+  def info(args)
     Printer.columns list
   end
 
-  def edit args
-    conf = get args[0]
+  def edit(args)
+    conf = get(args[0])
     conf ? conf.do_edit : info(nil)
   end
 
-  def start args
-    conf = get args[0]
+  def start(args)
+    conf = get(args[0])
     conf ? conf.do_start : info(nil)
   end
 
-  def stop args
-    conf = get args[0]
+  def stop(args)
+    conf = get(args[0])
     conf ? conf.do_stop : info(nil)
   end
 
-  def restart args
-    conf = get args[0]
+  def restart(args)
+    conf = get(args[0])
     conf ? conf.do_restart : info(nil)
   end
 
-  def status args
+  def status(args)
     running = []
     @services.each do |k, v|
       if v.can_start?
@@ -60,21 +60,25 @@ class Commands
 
   # Semi-public Commands
   #
-  # These are used for things like autocomplete. They are mostly useless
-  # for everyday usage which is why they don't get a place in the help text.
+  # All of these currently start with list_ which prevents them from being
+  # listed in the autcomplete, which is incidentally also why they exist in
+  # the first place.
+  #
+  def list_commands(args)
+    puts Commands.instance_methods(false).reject { |item| item[/^list_/] }
+  end
 
-
-  def list_services args
+  def list_services(args)
     startable = @services.select { |_, v| v.can_start? }
     puts startable.collect { |item| item[0].to_s }.sort
   end
 
-  def list_configs args
+  def list_configs(args)
     editable = @services.select { |_, v| v.is_editable? }
     puts editable.collect { |item| item[0].to_s }.sort
   end
 
-  def list_running args
+  def list_running(args)
     running = @services.select { |_, v| v.can_start? && v.running? }
     puts running.collect { |item| item[0].to_s }.sort
   end
@@ -82,7 +86,7 @@ class Commands
 
   private
 
-    def get id
+    def get(id)
       @services[id.downcase.to_sym]
     end
 

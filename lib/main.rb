@@ -1,5 +1,5 @@
-require "lib/runner"
-require "lib/commands"
+require 'lib/runner'
+require 'lib/commands'
 
 module Dobby
 
@@ -12,12 +12,12 @@ module Dobby
   # This is set up to  allow multiple files, but the frontend
   # currently doesn't know who to call when that happens.
   #
-  def self.load filename
+  def self.load(filename)
     if not @@files[filename]
       dsl = Runner.new
       dsl.instance_eval(File.read(filename), filename)
 
-      @@files[filename] = Commands.new dsl
+      @@files[filename] = Commands.new(dsl)
     end
 
     @@files[filename]
@@ -27,13 +27,13 @@ module Dobby
   #
   # TODO safety checks!
   #
-  def self.execute command, needs_root
+  def self.execute(command, needs_root)
     # Drop to root if required
     if needs_root && ENV['USER'] != 'root'
-      exec "sudo #{DOBBY_COMMAND}"
+      exec("sudo #{DOBBY_COMMAND}")
     end
     
-    system command
+    system(command)
   end
 
   # Everyone's favorite versioning scheme

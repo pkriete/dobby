@@ -1,4 +1,4 @@
-require "lib/service"
+require 'lib/service'
 
 # Defines the configuration language used for the config file.
 class Runner
@@ -15,7 +15,7 @@ class Runner
   # are simply an alias. Also not sure I love "services"
   # as a name.
   #
-  def config name, &block
+  def config(name, &block)
     item = Service.new(name)
     yield item
     @services[item.id] = item
@@ -32,7 +32,7 @@ class Runner
   # > Editing hosts file
   # > Restarting apache
   #
-  def task name, &block
+  def task(name, &block)
     return
   end
 

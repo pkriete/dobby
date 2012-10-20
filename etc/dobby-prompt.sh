@@ -3,7 +3,7 @@ DOBBY="${DOBBY_PROMPT_DIR}/../dobby.rb"
 
 # Bam!
 
-alias dobby='ruby $DOBBY'
+alias dobby='ruby -w $DOBBY'
 
 
 # Now the autocomplete
@@ -45,7 +45,7 @@ _dobby()
 			*) ;;
 		esac
 	else
-		__dobby_complete "$(dobby list-commands)"
+		__dobby_complete "$(dobby list_commands)"
 	fi
 }
 

@@ -12,11 +12,14 @@ class Service
 
     attr_accessor :name
     
-    def initialize moniker
-      if not moniker.respond_to? "first"
+    def initialize(moniker)
+      if not moniker.respond_to?('first')
         @id = moniker
       else
         @id, @parent_id = moniker.first
       end
+
+      @process = nil
+      @needs_root = false
     end
 end

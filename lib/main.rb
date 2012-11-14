@@ -3,8 +3,9 @@ require 'lib/commands'
 
 module Dobby
 
-  VERSION = '0.1.0'
+  extend self
 
+  VERSION = '0.1.0'
   @@files = {}
 
   # Loads and parses a config file.
@@ -12,7 +13,7 @@ module Dobby
   # This is set up to  allow multiple files, but the frontend
   # currently doesn't know who to call when that happens.
   #
-  def self.load(filename)
+  def load(filename)
     if not @@files[filename]
       dsl = Runner.new
       dsl.instance_eval(File.read(filename), filename)
@@ -27,7 +28,7 @@ module Dobby
   #
   # TODO safety checks!
   #
-  def self.execute(command)    
+  def execute(command)    
     system(command)
   end
 
@@ -37,7 +38,7 @@ module Dobby
   # that action as the new command. This means that
   # nothing can happen after a run call!
   #
-  def self.run(service, command)
+  def run(service, command)
     if service.needs_root? && ENV['USER'] != 'root'
       exec("sudo #{ENV['_']} #{DOBBY_BIN} #{command} #{service.name}")
     end
@@ -48,14 +49,14 @@ module Dobby
 
   # Delay execution and alert user
   #
-  def self.delay
+  def delay
     puts "Delaying ..."
     sleep 1
   end
 
   # Everyone's favorite versioning scheme
   #
-  def self.version
+  def version
     VERSION
   end
 

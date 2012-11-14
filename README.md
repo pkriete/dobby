@@ -77,7 +77,7 @@ For now, here's a full apache example. I will leave you to figure it out:
 
     service :apache do |s|
       s.name = "Apache"
-      s.file = "private/etc/apache2/httpd.conf"
+      s.file = "/private/etc/apache2/httpd.conf"
 
       s.start   = "apachectl start"
       s.stop    = "apachectl stop"

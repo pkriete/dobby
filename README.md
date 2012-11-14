@@ -92,7 +92,7 @@ For now, here's a full apache example. I will leave you to figure it out:
       c.file  = "/usr/local/etc/php/5.4/php.ini"
     end
 
-Ideally, in the future dependencies (as seen here as :php => :apache) will force
+Direct dependencies (as seen here as :php => :apache) will force
 the parent process to restart when a dependent child is edited.
 
 ## License

@@ -18,16 +18,15 @@ Signal.trap("USR1") do
   exec DOBBY_COMMAND + " --delay"
 end
 
+require 'lib/main'
+require 'lib/printer'
+
 # Catch startup delay
 if ARGV.last == '--delay'
   ARGV.pop
-  puts "Delaying ..."
-  sleep 1
+  Dobby.delay
 end
 
-
-require 'lib/main'
-require 'lib/printer'
 
 cmd = ARGV.shift
 

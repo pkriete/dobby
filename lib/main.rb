@@ -27,13 +27,30 @@ module Dobby
   #
   # TODO safety checks!
   #
-  def self.execute(command, needs_root)
-    # Drop to root if required
-    if needs_root && ENV['USER'] != 'root'
-      exec("sudo #{DOBBY_COMMAND}")
+  def self.execute(command)    
+    system(command)
+  end
+
+  # Run a dobby command from inside dobby
+  #
+  # If we need to drop to root it will restart with
+  # that action as the new command. This means that
+  # nothing can happen after a run call!
+  #
+  def self.run(service, command)
+    if service.needs_root? && ENV['USER'] != 'root'
+      exec("sudo #{ENV['_']} #{DOBBY_BIN} #{command} #{service.name}")
     end
     
-    system(command)
+    command = "do_#{command}"
+    service.send(command.to_sym)
+  end
+
+  # Delay execution and alert user
+  #
+  def self.delay
+    puts "Delaying ..."
+    sleep 1
   end
 
   # Everyone's favorite versioning scheme

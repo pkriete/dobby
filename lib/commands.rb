@@ -21,23 +21,29 @@ class Commands
   end
 
   def edit(args)
-    conf = get(args[0])
-    conf ? conf.do_edit : info(nil)
+    run('edit', args)
+    #conf = get(args[0])
+    #conf ? conf.do_edit : info(nil)
   end
 
   def start(args)
-    conf = get(args[0])
-    conf ? conf.do_start : info(nil)
+    run('start', args)
+    #conf = get(args[0])
+    #conf ? conf.do_start : info(nil)
   end
 
   def stop(args)
-    conf = get(args[0])
-    conf ? conf.do_stop : info(nil)
+    run('stop', args)
+
+    #conf = get(args[0])
+    #conf ? conf.do_stop : info(nil)
   end
 
   def restart(args)
-    conf = get(args[0])
-    conf ? conf.do_restart : info(nil)
+    run('restart', args)
+
+    #conf = get(args[0])
+    #conf ? conf.do_restart : info(nil)
   end
 
   def status(args)
@@ -85,6 +91,16 @@ class Commands
 
 
   private
+
+    def run(cmd, args)
+      conf = get(args.shift)
+
+      if conf.respond_to?("do_#{cmd}")
+        Dobby.run(conf, cmd)
+      else
+        info(nil)
+      end
+    end
 
     def get(id)
       @services[id.downcase.to_sym]

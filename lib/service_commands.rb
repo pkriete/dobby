@@ -4,20 +4,24 @@ module ServiceCommands
 
   # Check if process is running, and if so restart
   def do_edit
-    puts "edit ..."
-    system("#{ENV['EDITOR']} #{get_value 'file'}")
+    puts "Waiting on editor ..."
+    Dobby.execute("#{ENV['EDITOR']} #{get_value 'file'}")
     puts "Error Editing" if $?.exitstatus != 0
 
-    # TODO if there is a parent dependency and this is not our own
+    # If there is a parent dependency and this is not our own
     # process (php vs apache) then the parent should be restarted
-    restart if running?
+    if running?
+      do_restart
+    elsif @parent && @parent.running?
+      Dobby.run(@parent, 'restart')
+    end
   end
 
   def do_start(args = [])
     # check for flags
     command = get_value('start')
     if command.respond_to?('call')
-      command = command.call args
+      command = command.call(args)
     end
     
     # In truth what I want to do here is call exec on the command and have it
@@ -32,14 +36,14 @@ module ServiceCommands
     # That way the PID could be stored by dobby and the sigusr command could
     # kill that particular process.
 
-    Dobby.execute(command, @needs_root)
+    Dobby.execute(command)
   end
 
 
   def do_stop
     command = get_value('stop')
     if command
-      Dobby.execute(command, @needs_root)
+      Dobby.execute(command)
     else
       send_stern_message('TERM') # 'KILL'
     end
@@ -51,10 +55,11 @@ module ServiceCommands
   # This method will try various restarting options
   #
   def do_restart
+    puts "Restarting #{@name} ..."
     restart_cmd = get_value('restart')
 
     if restart_cmd
-      Dobby.execute restart_cmd, @needs_root
+      Dobby.execute(restart_cmd)
       return
     end
 
@@ -91,11 +96,16 @@ module ServiceCommands
     return self.file != nil
   end
 
+  def needs_root?
+    return @needs_root
+  end
+
   # Check if a process is running
   # Investigate switching to pgrep
   def running?
-    proc = @process || @id
-    test = `ps aux | grep #{proc} | wc -l 2>/dev/null`.strip.to_i
+    return false unless @process
+
+    test = `ps aux | grep #{@process} | wc -l 2>/dev/null`.strip.to_i
     test > 2 # one for grep and one for the ruby `sh -c`
   end
 

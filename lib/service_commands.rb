@@ -147,8 +147,7 @@ module ServiceCommands
 
       # nom nom nom
 
-      #leftoverpids = `ps aux | grep #{proc} | grep -v dobby | #{nogreppid}`
-      leftoverpids = `pgrep #{proc}`
+      leftoverpids = `ps aux | grep #{proc} | grep -v dobby | #{nogreppid}`
       leftoverpids.split(/\n/).each do |process|
         `kill #{process}`
       end

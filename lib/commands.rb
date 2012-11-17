@@ -10,6 +10,9 @@ class Commands
     @services = Hash.new
     dsl.services.each do |k, v|
       @services[k] = v.extend ServiceCommands
+    end
+    
+    dsl.services.each do |k, v|
       v.parent = @services[v.parent_id]
     end
   end
@@ -22,28 +25,18 @@ class Commands
 
   def edit(args)
     run('edit', args)
-    #conf = get(args[0])
-    #conf ? conf.do_edit : info(nil)
   end
 
   def start(args)
     run('start', args)
-    #conf = get(args[0])
-    #conf ? conf.do_start : info(nil)
   end
 
   def stop(args)
     run('stop', args)
-
-    #conf = get(args[0])
-    #conf ? conf.do_stop : info(nil)
   end
 
   def restart(args)
     run('restart', args)
-
-    #conf = get(args[0])
-    #conf ? conf.do_restart : info(nil)
   end
 
   def status(args)
@@ -96,7 +89,7 @@ class Commands
       conf = get(args.shift)
 
       if conf.respond_to?("do_#{cmd}")
-        Dobby.run(conf, cmd)
+        Dobby.run(conf, cmd, args)
       else
         info(nil)
       end

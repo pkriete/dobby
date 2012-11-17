@@ -3,18 +3,13 @@ module ServiceCommands
   attr_writer :parent
 
   # Check if process is running, and if so restart
-  def do_edit
+  def do_edit(args = [])
     puts "Waiting on editor ..."
     Dobby.execute("#{ENV['EDITOR']} #{get_value 'file'}")
     puts "Error Editing" if $?.exitstatus != 0
 
-    # If there is a parent dependency and this is not our own
-    # process (php vs apache) then the parent should be restarted
-    if running?
-      do_restart
-    elsif @parent && @parent.running?
-      Dobby.run(@parent, 'restart')
-    end
+    # Attempt to restart
+    do_restart
   end
 
   def do_start(args = [])
@@ -40,7 +35,7 @@ module ServiceCommands
   end
 
 
-  def do_stop
+  def do_stop(args = [])
     command = get_value('stop')
     if command
       Dobby.execute(command)
@@ -54,7 +49,16 @@ module ServiceCommands
   #
   # This method will try various restarting options
   #
-  def do_restart
+  def do_restart(args = [])
+
+    # If there is a parent dependency and this is not our own
+    # process (php vs apache) then the parent should be restarted
+
+    if not running?
+      Dobby.run(@parent, 'restart') if @parent
+      return
+    end
+
     puts "Restarting #{@name} ..."
     restart_cmd = get_value('restart')
 
@@ -105,8 +109,9 @@ module ServiceCommands
   def running?
     return false unless @process
 
-    test = `ps aux | grep #{@process} | wc -l 2>/dev/null`.strip.to_i
-    test > 2 # one for grep and one for the ruby `sh -c`
+    test = `pgrep #{@process} | wc -l 2>/dev/null`.strip.to_i
+    #test = `ps aux | grep #{@process} | wc -l 2>/dev/null`.strip.to_i
+    test > 1 # one for grep and one for the ruby `sh -c`
   end
 
   private
@@ -142,7 +147,8 @@ module ServiceCommands
 
       # nom nom nom
 
-      leftoverpids = `ps aux | grep #{proc} | grep -v dobby | #{nogreppid}`
+      #leftoverpids = `ps aux | grep #{proc} | grep -v dobby | #{nogreppid}`
+      leftoverpids = `pgrep #{proc}`
       leftoverpids.split(/\n/).each do |process|
         `kill #{process}`
       end

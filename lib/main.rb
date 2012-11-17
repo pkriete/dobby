@@ -7,6 +7,7 @@ module Dobby
 
   VERSION = '0.1.0'
   @@files = {}
+  @@has_run = false
 
   # Loads and parses a config file.
   #
@@ -38,13 +39,17 @@ module Dobby
   # that action as the new command. This means that
   # nothing can happen after a run call!
   #
-  def run(service, command)
+  def run(service, command, args = [])
+
     if service.needs_root? && ENV['USER'] != 'root'
-      exec("sudo #{ENV['_']} #{DOBBY_BIN} #{command} #{service.name}")
+      exec("sudo #{ENV['_']} #{DOBBY_BIN} #{command} #{service.name} #{args.join(' ')}")
+    elsif @@has_run
+      exec("#{ENV['_']} #{DOBBY_BIN} #{command} #{service.name} #{args.join(' ')}")
     end
     
+    @@has_run = true
     command = "do_#{command}"
-    service.send(command.to_sym)
+    service.send(command.to_sym, args)
   end
 
   # Delay execution and alert user

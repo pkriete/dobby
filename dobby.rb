@@ -51,6 +51,10 @@ if not config.respond_to?(cmd)
   Printer.error 'Command not found.'
 end
 
+# Extend argv
+require 'lib/argv'
+ARGV.extend(DobbyArgv)
+
 # TODO Error handling
 
 # Go go go!

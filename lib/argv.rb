@@ -2,6 +2,8 @@
 #
 module DobbyArgv
 
+  # Turn options into a hash
+  #
   def parse(options)
     result = {}
 
@@ -13,20 +15,24 @@ module DobbyArgv
     result
   end
 
+  # Find value of a given flag.
+  #
   def find_value(key, alternate)
+    alternate << '='
+
     position = index do |v|
-      v == key or v.start_with?(alternate + '=')
+      v == key || v.start_with?(alternate)
     end
 
-    if position == nil
-      return nil
-    end
+    return nil unless position
 
-    if fetch(position).start_with?(alternate + '=')
-      fetch(position)[alternate + '='] = ''
+    if fetch(position).start_with?(alternate)
+      fetch(position)[alternate] = ''
     else
-      fetch(position + 1)
+      position += 1
     end
+
+    fetch(position)
   end
 
 end

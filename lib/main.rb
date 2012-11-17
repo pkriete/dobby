@@ -7,7 +7,6 @@ module Dobby
 
   VERSION = '0.1.0'
 
-  @@files = {}
   @@startup = true
 
   # Start
@@ -27,18 +26,10 @@ module Dobby
 
   # Loads and parses a config file.
   #
-  # This is set up to  allow multiple files, but the frontend
-  # currently doesn't know who to call when that happens.
-  #
   def load(filename)
-    if not @@files[filename]
-      dsl = Runner.new
-      dsl.instance_eval(File.read(filename), filename)
-
-      @@files[filename] = Commands.new(dsl)
-    end
-
-    @@files[filename]
+    dsl = Runner.new
+    dsl.instance_eval(File.read(filename), filename)
+    Commands.new(dsl)
   end
 
   # Execute a shell command

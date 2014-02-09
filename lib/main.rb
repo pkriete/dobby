@@ -1,4 +1,4 @@
-require 'lib/runner'
+require 'lib/dsl_definition'
 require 'lib/commands'
 
 module Dobby
@@ -27,7 +27,7 @@ module Dobby
   # Loads and parses a config file.
   #
   def load(filename)
-    dsl = Runner.new
+    dsl = DSL.new
     dsl.instance_eval(File.read(filename), filename)
     Commands.new(dsl)
   end

@@ -1,7 +1,7 @@
 require 'lib/service'
 
 # Defines the configuration language used for the config file.
-class Runner
+class DSL
 
   attr_reader :services
 

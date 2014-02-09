@@ -15,7 +15,7 @@ module ServiceCommands
   def do_start(args = [])
     # check for flags
     command = get_value('start')
-    if command.respond_to?('call')
+    if command.respond_to?(:call)
       command = command.call(args)
     end
     
@@ -72,7 +72,7 @@ module ServiceCommands
     # if we have start and stop we can fake it given that there were
     # no parameters used to start it.
     if can_stop?
-      unless start_cmd.respond_to?('call') # potentially has parameters
+      unless start_cmd.respond_to?(:call) # potentially has parameters
         do_stop
         do_start
         return
@@ -105,12 +105,10 @@ module ServiceCommands
   end
 
   # Check if a process is running
-  # Investigate switching to pgrep
   def running?
     return false unless @process
 
     test = `pgrep #{@process} | wc -l 2>/dev/null`.strip.to_i
-    #test = `ps aux | grep #{@process} | wc -l 2>/dev/null`.strip.to_i
     test > 1 # one for grep and one for the ruby `sh -c`
   end
 

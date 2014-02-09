@@ -18,7 +18,7 @@ module ServiceCommands
     if command.respond_to?(:call)
       command = command.call(args)
     end
-    
+
     # In truth what I want to do here is call exec on the command and have it
     # take over completely. Especially since a lot of the target processes for
     # dobby aren't daemons and there is no point in having the ruby process hang
@@ -109,7 +109,7 @@ module ServiceCommands
     return false unless @process
 
     test = `pgrep #{@process} | wc -l 2>/dev/null`.strip.to_i
-    test > 1 # one for grep and one for the ruby `sh -c`
+    test > 0
   end
 
   private

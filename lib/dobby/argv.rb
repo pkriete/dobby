@@ -1,6 +1,21 @@
+
 # Used to extend ARGV
 #
 module DobbyArgv
+
+  def command
+    self[0]
+  end
+
+  def service
+    self[1]
+  end
+
+  def args
+    self[2..-1]
+  end
+
+  # Utilities for pass through params
 
   # Turn options into a hash
   #

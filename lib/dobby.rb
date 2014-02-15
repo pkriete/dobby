@@ -1,8 +1,15 @@
-require 'lib/dsl_definition'
-require 'lib/commands'
+$:.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
+
+require 'dobby/printer'
+require 'dobby/dsl'
+require 'dobby/dsl_service_definition'
+require 'dobby/service'
+require 'dobby/services'
+require 'dobby/commands'
+
+require 'dobby/config'
 
 module Dobby
-
   extend self
 
   VERSION = '0.1.0'
@@ -11,30 +18,24 @@ module Dobby
 
   # Start
   #
-  def start(cmd, config_file)
-    # Parse config file
-    config = self.load(config_file)
+  # `dobby command [service [args]]`
+  #
+  def start(config_file)
+    config = Config.new(config_file)
 
-    # Catch invalid commands
-    if not config.respond_to?(cmd)
-      Printer.error 'Command not found.'
+    svc = Services.new(config)
+    cmd = Commands.new(svc)
+
+    if not ARGV.service
+      return cmd.exec()
     end
 
-    # Go go go!
-    config.send(cmd.to_sym, ARGV)
+    cmd.exec(svc.get_current_service(), ARGV.args)
   end
 
-  # Loads and parses a config file.
-  #
-  def load(filename)
-    dsl = DSL.new
-    dsl.instance_eval(File.read(filename), filename)
-    Commands.new(dsl)
-  end
+  # From here on down it's all utility
 
-  # Execute a shell command
-  #
-  def execute(command)    
+  def execute(command)
     system(command)
   end
 
@@ -47,7 +48,7 @@ module Dobby
   def run(service, command, args = [])
 
     shell_cmd = "#{DOBBY_COMMAND} #{command} "
-    shell_cmd << "#{service.name.shellescape} "
+    shell_cmd << "#{service.name().shellescape} "
     shell_cmd << args.join(' ').shellescape
 
     if service.needs_root? && ENV['USER'] != 'root'
@@ -55,9 +56,10 @@ module Dobby
     end
 
     exec("#{shell_cmd}") unless @@startup
-    
+
     @@startup = false
     command = "do_#{command}"
+
     service.send(command.to_sym, args)
   end
 
@@ -67,11 +69,4 @@ module Dobby
     puts "Delaying ..."
     sleep 1
   end
-
-  # Everyone's favorite versioning scheme
-  #
-  def version
-    VERSION
-  end
-
 end

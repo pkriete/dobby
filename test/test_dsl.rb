@@ -1,7 +1,9 @@
 require 'test/unit'
 
 $:.unshift File.expand_path('../../lib', __FILE__)
-require 'dsl_definition'
+
+require 'dobby/dsl'
+require 'dobby/dsl_service_definition'
 
 # Override the backtick command
 # @todo option to call the old one? collect_system_calls = true?
@@ -15,7 +17,7 @@ class TestConfig < Test::Unit::TestCase
 
   def setup
     super
-    @dsl = DSL.new
+    @dsl = Dobby::DSL.new
   end
 
   def test_config_assigns

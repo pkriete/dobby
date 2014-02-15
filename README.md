@@ -55,7 +55,7 @@ Let's also add a server. In this case, we will try Jekyll:
       s.process = 'jekyll'
     end
 
-Giving you configuration a start command and a process name (or stop command)
+Giving your configuration a start command and a process name (or stop command)
 tells Dobby how it can start and stop this service. Let's try that. Jekyll
 does not start as a daemon, so we will need two terminal windows:
 

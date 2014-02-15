@@ -16,33 +16,29 @@ Signal.trap("USR1") do
   exec(DOBBY_COMMAND + ARGV.join(' ').shellescape + " --delay")
 end
 
-require 'lib/main'
-require 'lib/printer'
+require 'lib/dobby'
+require 'lib/dobby/argv'
+ARGV.extend(DobbyArgv)
 
 # Catch startup delay
 if ARGV.last == '--delay'
-  ARGV.pop
   Dobby.delay
 end
 
-# Grab command
-cmd = ARGV.shift
+cmd = ARGV.command
+
 
 # Help text
-if not cmd || %w(-h --help help).include?(cmd)
-  Printer.help
+if ARGV.command == nil || %w(-h --help help).include?(cmd)
+  Dobby::Printer.help
   exit cmd ? 0 : 1
 end
 
 # Version
 if %w(-v --version).include?(cmd)
-  puts "Dobby #{Dobby.version}"
+  Dobby::Printer.version
   exit 0
 end
 
-# Extend argv
-require 'lib/argv'
-ARGV.extend(DobbyArgv)
-
 # Here's a sock. Now go do your work!
-Dobby.start(cmd, File.expand_path(DOBBY_CONFIG_FILE))
+Dobby.start(File.expand_path(DOBBY_CONFIG_FILE))
